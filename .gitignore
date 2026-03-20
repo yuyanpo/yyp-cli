@@ -1,0 +1,30 @@
+node_modules/
+dist/
+*.tgz
+
+# ============================================
+# Claude Code 配置
+# ============================================
+
+# 个人本地配置（敏感）
+**/.claude/settings.local.json
+**/.claude/.env
+**/.claude/.env.*
+**/.claude/*.key
+**/.claude/*.pem
+**/.claude/secrets/
+
+# 缓存和日志
+**/.claude/cache/
+**/.claude/logs/
+**/.claude/tmp/
+**/.claude/*.log
+
+# 备份文件
+**/.claude/*.bak
+**/.claude/*.backup
+**/.claude/.DS_Store
+
+# 本地历史（如有）
+**/.claude/.history
+**/.claude/.claude-history
