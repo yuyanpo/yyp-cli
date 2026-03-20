@@ -1,16 +1,22 @@
 {
   "name": "yyp-cli",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A personal CLI tool",
   "main": "dist/index.cjs",
-  "bin": { "yyp": "dist/index.cjs" },
+  "bin": {
+    "yyp": "dist/index.cjs"
+  },
   "scripts": {
     "build": "tsdown",
     "dev": "tsdown --watch",
     "prepublishOnly": "pnpm run build"
   },
-  "files": ["dist"],
-  "engines": { "node": ">=18" },
+  "files": [
+    "dist"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
   "author": "yuyanpo",
   "license": "MIT",
   "devDependencies": {
