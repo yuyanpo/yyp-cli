@@ -5,10 +5,10 @@ A personal CLI tool.
 ## Installation
 
 ```bash
-pnpm link --global
+npx yyp-cli@latest uptime
 ```
 
-Or publish and install globally:
+install globally:
 
 ```bash
 npm install -g yyp-cli
