@@ -1,4 +1,5 @@
-import { execSync } from 'node:child_process'
+import { execSync, execFileSync } from 'node:child_process'
+import { readFileSync } from 'node:fs'
 import { Command } from 'commander'
 import chalk from 'chalk'
 
@@ -10,12 +11,40 @@ interface BootInfo {
   seconds: number
 }
 
+function getBootSec(): number {
+  const platform = process.platform
+
+  if (platform === 'darwin') {
+    const raw = execSync('sysctl kern.boottime', { encoding: 'utf8' })
+    const match = raw.match(/sec\s*=\s*(\d+)/)
+    if (!match) throw new Error('Could not parse kern.boottime')
+    return parseInt(match[1], 10)
+  }
+
+  if (platform === 'linux') {
+    const raw = readFileSync('/proc/uptime', 'utf8')
+    const uptimeSec = parseFloat(raw.split(' ')[0])
+    return Math.floor(Date.now() / 1000 - uptimeSec)
+  }
+
+  if (platform === 'win32') {
+    const raw = execFileSync('wmic', ['os', 'get', 'LastBootUpTime'], { encoding: 'utf8' })
+    // Format: 20260320103000.000000+480
+    const match = raw.match(/(\d{14})/)
+    if (!match) throw new Error('Could not parse LastBootUpTime')
+    const s = match[1]
+    const date = new Date(
+      `${s.slice(0, 4)}-${s.slice(4, 6)}-${s.slice(6, 8)}T` +
+      `${s.slice(8, 10)}:${s.slice(10, 12)}:${s.slice(12, 14)}`
+    )
+    return Math.floor(date.getTime() / 1000)
+  }
+
+  throw new Error(`Unsupported platform: ${platform}`)
+}
+
 function getBootInfo(): BootInfo {
-  const raw = execSync('sysctl kern.boottime', { encoding: 'utf8' })
-  // Output: kern.boottime: { sec = 1770887470, usec = 247131 } ...
-  const match = raw.match(/sec\s*=\s*(\d+)/)
-  if (!match) throw new Error('Could not parse kern.boottime — macOS only')
-  const bootSec = parseInt(match[1], 10)
+  const bootSec = getBootSec()
   const total = Math.floor(Date.now() / 1000) - bootSec
   return {
     bootDate: new Date(bootSec * 1000),
