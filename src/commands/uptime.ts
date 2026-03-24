@@ -2,6 +2,7 @@ import { execSync, execFileSync } from 'node:child_process'
 import { readFileSync } from 'node:fs'
 import { Command } from 'commander'
 import chalk from 'chalk'
+import boxen from 'boxen'
 
 interface BootInfo {
   bootDate: Date
@@ -51,6 +52,19 @@ function formatDate(date: Date): string {
   )
 }
 
+function formatUptime(days: number, hours: number, minutes: number, seconds: number): string {
+  return (
+    [
+      days    ? chalk.green(`${days}`)    + chalk.dim('d') : '',
+      hours   ? chalk.green(`${hours}`)   + chalk.dim('h') : '',
+      minutes ? chalk.green(`${minutes}`) + chalk.dim('m') : '',
+      chalk.green(`${seconds}`) + chalk.dim('s'),
+    ]
+      .filter(Boolean)
+      .join(chalk.dim(' '))
+  )
+}
+
 function getBootInfo(): BootInfo {
   const bootSec = getBootSec()
   const total = Math.floor(Date.now() / 1000) - bootSec
@@ -70,6 +84,7 @@ export function registerUptimeCommand(program: Command): void {
     .option('--json', 'Output as JSON')
     .action((opts: { json?: boolean }) => {
       const info = getBootInfo()
+
       if (opts.json) {
         console.log(JSON.stringify({
           bootTime: info.bootDate.toISOString(),
@@ -78,16 +93,20 @@ export function registerUptimeCommand(program: Command): void {
         }, null, 2))
         return
       }
+
+      const content = [
+        `${chalk.gray('Boot time: ')} ${chalk.cyan(formatDate(info.bootDate))}`,
+        `${chalk.gray('Uptime   : ')} ${formatUptime(info.days, info.hours, info.minutes, info.seconds)}`,
+      ].join('\n\n')
+
       console.log(
-        chalk.bold('Boot time') + ' : ' +
-        chalk.cyan(formatDate(info.bootDate))
-      )
-      console.log(
-        chalk.bold('Uptime   ') + ' : ' +
-        chalk.green(`${info.days}`) + chalk.dim('d ') +
-        chalk.green(`${info.hours}`) + chalk.dim('h ') +
-        chalk.green(`${info.minutes}`) + chalk.dim('m ') +
-        chalk.green(`${info.seconds}`) + chalk.dim('s')
+        boxen(content, {
+          title: chalk.bold.gray('💻 System Status'),
+          titleAlignment: 'center',
+          padding: { top: 1, bottom: 1, left: 2, right: 2 },
+          borderStyle: 'round',
+          borderColor: 'gray',
+        })
       )
     })
 }

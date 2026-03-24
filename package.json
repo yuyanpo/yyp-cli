@@ -14,7 +14,8 @@
     "release:minor": "pnpm version minor -m \"release: v%s\" && git push && git push --tags",
     "release:major": "pnpm version major -m \"release: v%s\" && git push && git push --tags",
     "pub": "pnpm publish",
-    "go": "pnpm run release:patch && pnpm run pub"
+    "go": "pnpm run release:patch && pnpm run pub",
+    "test:format": "node scripts/test-format.mjs"
   },
   "files": [
     "dist"
@@ -30,6 +31,7 @@
     "typescript": "^5.8.0"
   },
   "dependencies": {
+    "boxen": "^8.0.1",
     "chalk": "^5.4.1",
     "commander": "^14.0.0"
   }
