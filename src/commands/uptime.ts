@@ -43,6 +43,14 @@ function getBootSec(): number {
   throw new Error(`Unsupported platform: ${platform}`)
 }
 
+function formatDate(date: Date): string {
+  const pad = (n: number, len = 2) => String(n).padStart(len, '0')
+  return (
+    `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ` +
+    `${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`
+  )
+}
+
 function getBootInfo(): BootInfo {
   const bootSec = getBootSec()
   const total = Math.floor(Date.now() / 1000) - bootSec
@@ -72,7 +80,7 @@ export function registerUptimeCommand(program: Command): void {
       }
       console.log(
         chalk.bold('Boot time') + ' : ' +
-        chalk.cyan(info.bootDate.toLocaleString())
+        chalk.cyan(formatDate(info.bootDate))
       )
       console.log(
         chalk.bold('Uptime   ') + ' : ' +
