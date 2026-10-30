@@ -3,9 +3,8 @@
   "version": "0.1.3",
   "description": "A personal CLI tool",
   "type": "module",
-  "main": "dist/index.cjs",
   "bin": {
-    "yyp": "dist/index.cjs"
+    "yyp": "dist/index.mjs"
   },
   "scripts": {
     "build": "tsdown",

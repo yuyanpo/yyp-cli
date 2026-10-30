@@ -1,13 +1,19 @@
 #!/usr/bin/env node
-import { Command } from 'commander'
-import { version } from '../package.json'
-import { registerUptimeCommand } from './commands/uptime.js'
-import { registerSysCommand } from './commands/sys.js'
-import { renderBanner } from './utils/banner.js'
+// Version gate: keep this file free of static imports and modern syntax so old
+// Node versions reach the friendly message instead of a parse / import error.
+// Keep in sync with "engines" in package.json.
+const MIN_MAJOR = 22
+const MIN_MINOR = 13
 
-const program = new Command()
-program.name('yyp').description('Personal CLI tool').version(version)
-program.addHelpText('before', renderBanner())
-registerUptimeCommand(program)
-registerSysCommand(program)
-program.parseAsync()
+const [major, minor] = process.versions.node.split('.').map(Number)
+if (major < MIN_MAJOR || (major === MIN_MAJOR && minor < MIN_MINOR)) {
+  console.error(
+    `yyp-cli requires Node.js >= ${MIN_MAJOR}.${MIN_MINOR}, but you are running ${process.versions.node}.\n` +
+      'Please upgrade Node.js: https://nodejs.org'
+  )
+  process.exit(1)
+}
+
+await import('./cli.js')
+
+export {}
